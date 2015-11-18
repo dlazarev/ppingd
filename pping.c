@@ -5,6 +5,7 @@
 #include <string.h>
 #include <syslog.h>
 #include <time.h>
+#include <limits.h>
 #include "libping-1.15/lib/ping.h"
 
 #define MAXWAITTIME 60 /* max wait time for ping reply */
@@ -21,6 +22,7 @@ int	noFork = 0; 		/* don't fork - don't run in daemon mode */
 char *hostsFile = "/etc/pping.hosts"; /* list of pinging hosts */
 int hostsCount = 0; /* count of hosts for ping */
 short int debug = 0; /* debug messages */
+char *hostname; // It's me
 
 struct hostRecord {
 	char *name; /* host name */
@@ -52,6 +54,12 @@ int main(int argc, char **argv)
 		default:
 			usage();
 		}
+
+	hostname = malloc(sizeof(char) * HOST_NAME_MAX+1);
+	if (!hostname) 
+		return 1;
+	gethostname(hostname, HOST_NAME_MAX);
+	if (debug) printf("hostname: %s\n", hostname);
 
 	readHostsFile();
 
@@ -154,7 +162,7 @@ void message(const char *fmt, const char *name, int val)
 {
 	char date[9];
 	char msg[100];
-	char mailcmd[255];
+	char mailcmd[1024];
 	time_t timep, delta;
 	struct tm *tms;
 	static time_t prevtime = 0;
@@ -184,7 +192,7 @@ void message(const char *fmt, const char *name, int val)
 	closelog();
 
 //	snprintf(mailcmd, sizeof(mailcmd), "echo \"%s %s\"|mail sms@bizzone.biz", date, msg);
-	snprintf(mailcmd, sizeof(mailcmd), "/usr/local/sbin/twitter.pl \"%s %s\"", date, msg);
+	snprintf(mailcmd, sizeof(mailcmd), "/usr/local/sbin/twitter.pl \"%s: %s %s\"", hostname, date, msg);
 	if (debug) fprintf(stderr, "%s\n", mailcmd);
 	else system(mailcmd);
 	sleep(1);
