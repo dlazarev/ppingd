@@ -70,6 +70,7 @@ int main(int argc, char **argv)
 		}
 	}
 	main_loop();
+	free(hostname);
 	return 0;
 }
 
