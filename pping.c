@@ -6,7 +6,7 @@
 #include <syslog.h>
 #include <time.h>
 #include <limits.h>
-#include "libping-1.15/lib/ping.h"
+#include "../libping-1.15/lib/ping.h"
 
 #define MAXWAITTIME 60 /* max wait time for ping reply */
 
@@ -82,6 +82,7 @@ void readHostsFile()
 
 	if ((cf = fopen(hostsFile, "r")) == NULL) {
 		fprintf(stderr, "Can't open hosts file: %s\n", hostsFile);
+		free(hostname);
 		exit(1);
 	}
 	/* Calculate host's number (It must doing easy, I don't know how) */
@@ -156,6 +157,7 @@ void syserr(int val)
 		fprintf(stderr, "pping: Socket error\n");
 	else if (val == -3)
 		fprintf(stderr, "pping: Connection refused\n");
+	free(hostname);
 	exit(-1);
 }
 
