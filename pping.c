@@ -6,7 +6,7 @@
 #include <syslog.h>
 #include <time.h>
 #include <limits.h>
-#include "../libping-1.15/lib/ping.h"
+#include <ping.h>
 
 #define MAXWAITTIME 60 /* max wait time for ping reply */
 
@@ -194,8 +194,8 @@ void message(const char *fmt, const char *name, int val)
 	syslog(LOG_NOTICE, msg);
 	closelog();
 
-//	snprintf(mailcmd, sizeof(mailcmd), "echo \"%s %s\"|mail sms@bizzone.biz", date, msg);
-	snprintf(mailcmd, sizeof(mailcmd), "/usr/local/sbin/twitter.pl \"%s: %s %s\"", hostname, date, msg);
+	snprintf(mailcmd, sizeof(mailcmd), "echo \"%s %s\"|mail -s \"%s: ppingd event\" diman.lazarev@gmail.com", date, msg, hostname);
+//	snprintf(mailcmd, sizeof(mailcmd), "/usr/local/sbin/twitter.pl \"%s: %s %s\"", hostname, date, msg);
 	if (debug) fprintf(stderr, "%s\n", mailcmd);
 	else system(mailcmd);
 	sleep(1);
